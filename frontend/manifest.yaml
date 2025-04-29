@@ -106,13 +106,13 @@ spec:
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
             readOnly: true
-            resources: #soft limits
-              requests:
-                memory: "68Mi"
-                cpu: "100m"
-              limits: #hard limits
-                memory: "128Mi"
-                cpu: "150m"
+          resources: #soft limits
+            requests:
+              memory: "68Mi"
+              cpu: "100m"
+            limits: #hard limits
+              memory: "128Mi"
+              cpu: "150m"
 
 ---
 
