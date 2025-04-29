@@ -1,0 +1,84 @@
+# here i need to create headless service,normal service and statefulset.
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-headless
+  namespace: expense
+  labels:
+    app: mysql
+    project: expense
+    tier: db
+spec:
+  clusterIP: None
+  selector:
+    app: mysql
+    project: expense
+    tier: db
+  ports:
+  - protocol: TCP
+    port: 3306 #service port
+    name: mysql
+    targetPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: expense
+  labels:
+    app: mysql
+    project: expense
+    tier: db
+spec:
+  selector:
+    app: mysql
+    project: expense
+    tier: db
+  ports:
+  - protocol: TCP
+    port: 3306 #service port
+    name: mysql
+    targetPort: 3306
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: expense
+ 
+spec:
+  selector:
+    matchLabels:
+      app: mysql # has to match .spec.template.metadata.labels
+      project: expense
+      tier: db
+  serviceName: "mysql-headless" # name of the headless service
+  replicas: 3 # by default is 1
+  minReadySeconds: 10 # by default is 0
+  template:
+    metadata:
+      labels:
+        app: mysql # has to match .spec.selector.matchLabels
+        project: expense
+        tier: db
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mysql
+        image: peddireddylokesh/mysql:1.0.0
+     
+        volumeMounts:
+        - name: mysql
+          mountPath: /var/lib/mysql
+          #instead of creating  a pvc resource , we can directly provide in statefulset.
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql
+    namespace: expense
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "ebs-sc" # name of the storage class"
+      resources:
+        requests:
+          storage: 1Gi
