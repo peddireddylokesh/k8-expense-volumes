@@ -85,11 +85,24 @@ spec:
         tier: frontend
         project: expense
     spec:
-      containers:
+      containers: 
         - name: frontend
           image: peddireddylokesh/frontend:1.2.0
           ports:
-            - containerPort: 8080
+          - containerPort: 8080
+          volumeMounts:
+            - name: nginx
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+      volumes:
+      - name: nginx
+        configMap:
+          name: nginx
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+      
 
 ---
 apiVersion: v1
