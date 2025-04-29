@@ -57,7 +57,7 @@ data:
             location /api/ {
                 proxy_pass http://backend:8080/;
             }
-            
+
             error_page 500 502 503 504 /50x.html;
                 location = /50x.html {
             }
@@ -106,6 +106,13 @@ spec:
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
             readOnly: true
+            resources: #soft limits
+              requests:
+                memory: "68Mi"
+                cpu: "100m"
+              limits: #hard limits
+                memory: "128Mi"
+                cpu: "150m"
 
 ---
 
